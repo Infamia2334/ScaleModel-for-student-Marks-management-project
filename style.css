@@ -1,0 +1,33 @@
+*{
+    font-family: 'Arima Madurai', cursive;
+}
+
+.email-text
+{
+    padding-bottom: 10px;
+}
+
+.password-text
+{
+    padding-bottom: 10px;
+}
+
+.checkbox
+{
+    padding-bottom: 10px;
+}
+
+.forgot-password
+{
+    font-size: 15px;
+}
+
+.card-header
+{
+    background-color: #34F6F2;
+}
+
+.container 
+{
+    
+}
