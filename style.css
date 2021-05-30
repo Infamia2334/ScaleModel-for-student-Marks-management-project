@@ -1,5 +1,6 @@
-*{
+body{
     font-family: 'Arima Madurai', cursive;
+    
 }
 
 .email-text
@@ -22,12 +23,23 @@
     font-size: 15px;
 }
 
-.card-header
-{
-    background-color: #34F6F2;
+
+.navbar 
+{   
+    background-color:aliceblue;
 }
 
-.container 
+.form-style-class
 {
+    margin: auto;
     
+    padding: 10%;
+}
+
+
+
+.card-body
+{
+    background-color:white;
+    color: black;
 }
