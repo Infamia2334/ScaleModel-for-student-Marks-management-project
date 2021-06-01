@@ -1,0 +1,22 @@
+{
+  "name": "node-for-site",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Infamia2334/ScaleModel-for-student-Marks-management-project.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Infamia2334/ScaleModel-for-student-Marks-management-project/issues"
+  },
+  "homepage": "https://github.com/Infamia2334/ScaleModel-for-student-Marks-management-project#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
