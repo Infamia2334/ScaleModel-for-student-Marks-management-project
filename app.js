@@ -1,19 +1,26 @@
 const express = require("express")
 const app = express();
 const http = require('http')
+const mongoose = require("mongoose")
 
 
 
 //Serving static styles:
 app.use(express.static("public"))                                                                   
 app.use("/css", express.static(__dirname  + "public/styles"))
+app.use("/img", express.static(__dirname + "public/images"))
+
+//Connecting to mongoose
+mongoose.connect("mongodb://localhost:27017/studentMarks", {useNewUrlParser : true, useUnifiedTopology: true})
+
+
 
 
 //Setting Views for ejs:
 app.set("views", "./views")
 app.set("view engine", "ejs" )
 
-
+//Rendering pages:
 app.get('/', function(req, res){
     res.render("register",{link:"/login"})
 })
