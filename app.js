@@ -1,11 +1,12 @@
 const env = require('dotenv').config()
-const { timeStamp } = require("console")
+
 const express = require("express")
 const app = express();
 const http = require('http')
 const mongoose = require("mongoose")
 const session = require("express-session")
 const passport = require("passport")
+const LocalStrategy = require("passport-local")
 const passportLocalMongoose = require("passport-local-mongoose")
 
 
@@ -21,7 +22,8 @@ app.use(express.urlencoded({extended:false}))
 app.use(session({
     secret: process.env.SECRET_KEY,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: true,
+    cookie: {}
 }))
 
 //Inititalising passport
@@ -47,25 +49,12 @@ const User = new mongoose.model("User", userSchema)
 
 //Using passport to create a local login strategy
 passport.use(User.createStrategy())
-
+passport.use(new LocalStrategy(User.authenticate()))
 //Serializing & deserializing current passport session
 passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser())
 
-// //Creating Method for setting User password using pbkdf2 hashing algorithm
-// userSchema.methods.setPassword = function(password){
-//     this.salt = crypto.randomBytes(16).toString("hex")
-//     this.hash = crypto.pbkdf2Sync(password, this.salt, 10000, 512, "sha512").toString("hex")
-// }
 
-// //Creating method to validate password:
-// userSchema.methods.validPassword = function(password){
-//     var hash = crypto.pbkdf2Sync(password, this.salt, 10000, 512, "sha512").toString("hex")
-//     return this.hash === hash
-// }
-            
-// userSchema.plugin(uniqueValidator, {message: "is already taken"})
-// mongoose.model("user", userSchema);
 
 //Setting Views for ejs:
 app.set("views", "./views")
@@ -75,12 +64,10 @@ app.set("view engine", "ejs" )
 app.get('/', function(req, res){
     res.render("register")
 })
-app.get('/login', function(req, res){
-    res.render("signin")
-})
 
 app.get("/home", function(req, res){
     if(req.isAuthenticated()){
+        // console.log(req)
         res.render("home")
     }
     else{
@@ -88,17 +75,28 @@ app.get("/home", function(req, res){
     }
 })
 
+
+app.get('/login', function(req, res){
+    res.render("signin")
+})
+
+
 //POST METHODS FOR FORMS:
 app.post('/', function(req, res){
     
-    User.register({username: req.body.email}, req.body.password, function(err, user){
+    User.register({username: req.body.username}, req.body.password, function(err, user){
         if(err){
             console.log(err)
             res.redirect("/")
         }
         else{
-                passport.authenticate("local")(req, res, function(){
-                res.redirect("/home")
+                passport.authenticate("local")(req, res, function(err){
+                if(err){
+                    console.log(err)
+                }
+                else{
+                    res.redirect("/home")
+                }
             })
         }
     })
