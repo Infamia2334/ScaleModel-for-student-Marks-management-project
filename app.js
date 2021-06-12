@@ -56,6 +56,8 @@ const stduentMarksSchema = mongoose.Schema ({
     Marks: Number
 })
 
+var itemsforList = []
+
 //initialisng plugin passportLocalMongoose
 userSchema.plugin(passportLocalMongoose)
 
@@ -82,16 +84,29 @@ app.get('/', function(req, res){
     res.render("register")
 })
 
-app.get("/list", function(req, res){
-    res.render("list", )
-})
+// app.get("/list", function(req, res){
+    
+// })
 
 
 
-app.route("/search")
+app.route("/list")
 .get(function(req, res){
     if(req.isAuthenticated()){
-        res.render("search")
+        Marks.find(function(err, foundMarks){
+            if(!err){
+                if(foundMarks.length){
+                    res.render("list", {Marks: foundMarks})
+                }
+                else{
+                    console.log("No data in database")
+                }
+            }
+            else{
+                console.log(err)
+            }
+        })
+        // res.render("list", {Roll: itemsforList})
 
     }
     else{
@@ -108,7 +123,8 @@ app.route("/search")
             console.log(err)
         }
         else if(foundMarks.length){
-            res.redirect("/list")
+            var itemforList = req.body.Roll
+            itemsforList.push(itemforList)
         }
         else{
             console.log("There are no marks found")
@@ -145,7 +161,7 @@ app.post('/', function(req, res){
     User.register({username: req.body.username}, req.body.password, function(err, user){
         if(err){
             console.log(err)
-            res.redirect("/")
+            res.redirect("/list")
         }
         else{
                 //authenticating users
@@ -155,7 +171,7 @@ app.post('/', function(req, res){
                 }
                 else{
                     //directly redirect to search after registration
-                    res.redirect("/search")
+                    res.redirect("/list")
                 }
             })
         }
@@ -177,7 +193,7 @@ app.post("/login", function(req, res){
       else {
           //authenticating users and redirecting to home page
           passport.authenticate("local")(req, res, function(){
-          res.redirect("/search");
+          res.redirect("/list");
         });
       }
     });
