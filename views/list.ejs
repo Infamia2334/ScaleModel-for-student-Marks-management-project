@@ -10,36 +10,36 @@
 </head>
 <body>
     <div>
-        <table class="table">
-            <thead>
-              <tr>
-                <th scope="col">Roll Number</th>
-                <th scope="col">Name</th>
-                <th scope="col">Subject</th>
-                <th scope="col">Marks</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th scope="row"><%= rollNumber %></th>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-                for (var i = 0, i<newtableitems)
-              </tr>
-              <tr>
-                <th scope="row">2</th>
-                <td>Jacob</td>
-                <td>Thornton</td>
-                <td>@fat</td>
-              </tr>
-              <tr>
-                <th scope="row">3</th>
-                <td colspan="2">Larry the Bird</td>
-                <td>@twitter</td>
-              </tr>
-            </tbody>
-          </table>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Roll</th>
+            <th scope="col">Name</th>
+            <th scope="col">Subject</th>
+            <th scope="col">Marks</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% Marks.forEach(function(Marks){ %>
+          <tr>
+
+            <th scope="row"><%= Marks.Roll %></th>
+       
+
+            <td><%= Marks.Name %></td>
+  
+
+   
+              <td><%= Marks.Subject %></td>
+    
+
+        
+              <td><%= Marks.Marks %></td>
+   
+          </tr>
+        <%})%>
+        </tbody>
+      </table>
     </div>
 </body>
 </html>
