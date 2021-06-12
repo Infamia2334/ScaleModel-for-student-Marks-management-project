@@ -6,7 +6,8 @@ const http = require('http')
 const mongoose = require("mongoose")
 const session = require("express-session")
 const passport = require("passport")
-const passportLocalMongoose = require("passport-local-mongoose")
+const passportLocalMongoose = require("passport-local-mongoose");
+const { Console } = require('console');
 
 
 
@@ -27,6 +28,7 @@ app.use(session({
     cookie: {}
 }))
 
+app.use(express.urlencoded({extended: true}))
 //Inititalising passport session
 app.use(passport.initialize())
 app.use(passport.session())
@@ -35,7 +37,9 @@ app.use(passport.session())
 mongoose.connect("mongodb://localhost:27017/userDB", {useNewUrlParser : true, useUnifiedTopology: true})
 mongoose.set('useCreateIndex', true)
 
-// Making Schemas for db:
+const studentMarksDB = mongoose.createConnection("mongodb://localhost:27017/studentMarksDB", {useNewUrlParser : true, useUnifiedTopology: true})
+
+// Defining User Schema for AUTHENTICATION:
 const userSchema = new mongoose.Schema ({
     
     username: String,
@@ -43,11 +47,22 @@ const userSchema = new mongoose.Schema ({
 
 })
 
+// Defining student marks schema for result Database
+const stduentMarksSchema = mongoose.Schema ({
+
+    Name: String,
+    Roll: Number,
+    Subject: String,
+    Marks: Number
+})
+
 //initialisng plugin passportLocalMongoose
 userSchema.plugin(passportLocalMongoose)
 
 //Creating new User model from userSchema in DB
 const User = new mongoose.model("User", userSchema)
+//Creating new studentMarks model from studentMarksSchema in DB:
+const Marks = studentMarksDB.model("marks", stduentMarksSchema)
 
 //Using passport to create a local login strategy
 passport.use(User.createStrategy())
@@ -67,16 +82,49 @@ app.get('/', function(req, res){
     res.render("register")
 })
 
-app.get("/home", function(req, res){
+app.get("/list", function(req, res){
+    res.render("list", )
+})
+
+
+
+app.route("/search")
+.get(function(req, res){
     if(req.isAuthenticated()){
-        //render home if user authenticated
-        res.render("home")
+        res.render("search")
+
     }
     else{
         //redirect to login if user not authenticated
         res.redirect("/login")
     }
 })
+
+.post(function(req, res){
+    
+
+    Marks.find({Roll: req.body.Roll, Subject: req.body.Subject}, function(err, foundMarks){
+        if(err){
+            console.log(err)
+        }
+        else if(foundMarks.length){
+            res.redirect("/list")
+        }
+        else{
+            console.log("There are no marks found")
+        }
+    })
+})
+// }, function(req, res){
+    // Marks.find(function(err, foundMarks){
+    //     if(err){
+    //         console.log(err)
+    //     }
+    //     else {
+    //         res.send(foundMarks)
+    //     }
+    // })
+//  })
 
 
 app.get('/login', function(req, res){
@@ -88,6 +136,8 @@ app.get("/logout", function(req, res){
     //redirecting to register(home route) when logging out
     req.redirect("/")
 })
+
+
 
 //POST METHODS FOR FORMS:
 app.post('/', function(req, res){
@@ -104,8 +154,8 @@ app.post('/', function(req, res){
                     console.log(err)
                 }
                 else{
-                    //directly redirect to home after registration
-                    res.redirect("/home")
+                    //directly redirect to search after registration
+                    res.redirect("/search")
                 }
             })
         }
@@ -127,12 +177,16 @@ app.post("/login", function(req, res){
       else {
           //authenticating users and redirecting to home page
           passport.authenticate("local")(req, res, function(){
-          res.redirect("/home");
+          res.redirect("/search");
         });
       }
     });
   
   });
+
+
+  
+
 
 
 app.listen(3000, function(){
