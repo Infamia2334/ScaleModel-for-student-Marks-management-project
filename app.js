@@ -34,10 +34,10 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 //Connecting to mongoose
-mongoose.connect("mongodb+srv://admin-dipan:Test123@appcluster.x7nob.mongodb.net/myFirstDatabase?retryWrites=true&w=majority", {useNewUrlParser : true, useUnifiedTopology: true})
+mongoose.connect("mongodb+srv://admin-dipan:Test123@appcluster.x7nob.mongodb.net/myFirstDatabase", {useNewUrlParser : true, useUnifiedTopology: true})
 mongoose.set('useCreateIndex', true)
 
-const studentMarksDB = mongoose.createConnection("mongodb+srv://admin-dipan:Test123@appcluster.x7nob.mongodb.net/studentMarksDB?retryWrites=true&w=majority", {useNewUrlParser : true, useUnifiedTopology: true})
+const studentMarksDB = mongoose.createConnection("mongodb+srv://admin-dipan:Test123@appcluster.x7nob.mongodb.net/studentMarksDB", {useNewUrlParser : true, useUnifiedTopology: true})
 
 // Defining User Schema for AUTHENTICATION:
 const userSchema = new mongoose.Schema ({
