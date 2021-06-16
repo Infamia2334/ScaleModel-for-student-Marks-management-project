@@ -10,8 +10,6 @@ const passportLocalMongoose = require("passport-local-mongoose");
 const { Console } = require('console');
 
 
-
-
 //Serving static styles and images:
 app.use(express.static("public"))                                                                   
 app.use("/css", express.static(__dirname  + "public/styles"))
@@ -39,13 +37,20 @@ mongoose.set('useCreateIndex', true)
 
 const studentMarksDB = mongoose.createConnection("mongodb+srv://admin-dipan:Test123@appcluster.x7nob.mongodb.net/studentMarksDB?retryWrites=true&w=majority", {useNewUrlParser : true, useUnifiedTopology: true})
 
+const ROLES = {
+    Admin: "Admin",
+    User: "User"
+}
 // Defining User Schema for AUTHENTICATION:
 const userSchema = new mongoose.Schema ({
     
     username: String,
-    password: String
+    password: String,
+    role: {type: String, default: ROLES.User}
 
 })
+
+
 
 // Defining student marks schema for result Database
 const stduentMarksSchema = mongoose.Schema ({
@@ -56,13 +61,17 @@ const stduentMarksSchema = mongoose.Schema ({
     Marks: Number
 })
 
-var itemsforList = []
+
 
 //initialisng plugin passportLocalMongoose
 userSchema.plugin(passportLocalMongoose)
 
 //Creating new User model from userSchema in DB
 const User = new mongoose.model("User", userSchema)
+
+
+
+
 //Creating new studentMarks model from studentMarksSchema in DB:
 const Marks = studentMarksDB.model("marks", stduentMarksSchema)
 
@@ -157,11 +166,15 @@ app.get("/logout", function(req, res){
 
 //POST METHODS FOR FORMS:
 app.post('/', function(req, res){
+    // const user = new User({
+    //     username: req.body.username,
+    //     password: req.body.password,
+    //     role: ""
+    //   })
     //using passport.register() to register new user in database
     User.register({username: req.body.username}, req.body.password, function(err, user){
         if(err){
             console.log(err)
-            res.redirect("/list")
         }
         else{
                 //authenticating users
@@ -193,6 +206,10 @@ app.post("/login", function(req, res){
       else {
           //authenticating users and redirecting to home page
           passport.authenticate("local")(req, res, function(){
+              if(req.user.role === "Admin"){
+                  console.log("You are an admin")
+              }
+              
           res.redirect("/list");
         });
       }
@@ -203,10 +220,10 @@ app.post("/login", function(req, res){
 
   
 
-  let port = process.env.PORT;
-  if (port == null || port == "") {
-    port = 3000;
-  }
+let port = process.env.PORT;
+if (port == null || port == "") {
+  port = 3000;
+}
  
 
 app.listen(port, function(){
