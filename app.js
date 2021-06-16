@@ -172,6 +172,79 @@ app.get("/student-dashboard", function(req, res){
     }
 })
 
+app.route("/studentCreation")
+.get( function(req, res){
+    if(req.isAuthenticated()){
+        if(req.user.role === "Admin"){
+            res.render("studentCreation")
+        }
+    }
+})
+.post(function(req, res){
+
+  const newStudent = new Marks({
+      Name : req.body.name,
+      Roll : req.body.roll,
+      Subject : req.body.subject,
+      Marks : req.body.marks
+  }) 
+
+  newStudent.save(function(err){
+      if(err){
+          console.log(err)
+      }
+      else{
+          console.log("New Student Created and saved")
+      }
+  })
+
+})
+
+app.route("/studentUpdate")
+.get(function(req, res){
+    if(req.isAuthenticated()){
+        if(req.user.role === "Admin"){
+            res.render("studentUpdate")
+        }
+    }
+})
+.post(function(req, res){
+
+    var objForUpdate ={
+        Name: "",
+        Subject: "",
+        Marks: ""
+    }
+    if(req.body.name){
+        objForUpdate.Name = req.body.name
+    }
+
+    if(req.body.subject){
+        objForUpdate.Subject = req.body.subject
+    }
+
+    if(req.body.name){
+        objForUpdate.Marks = req.body.marks
+    }
+
+
+
+    Marks.updateOne({Roll: req.body.roll}, {$set: req.body}, function(err, docs){
+        if(err){
+            console.log(err)
+        }else{
+            console.log("Successfully updated docs, :", docs)
+        }
+
+    })
+
+})
+
+
+
+
+
+
 app.get('/login', function(req, res){
     res.render("signin")
 })
@@ -181,6 +254,7 @@ app.get("/logout", function(req, res){
     //redirecting to register(home route) when logging out
     res.redirect("/")
 })
+
 
 
 
@@ -226,6 +300,7 @@ app.post("/login", function(req, res){
       else {
           //authenticating users and redirecting to home page
           passport.authenticate("local")(req, res, function(){
+              console.log(req.user.role)
               if(req.user.role === "Admin"){
                 res.redirect("/dashboard")
               }
