@@ -152,6 +152,26 @@ app.route("/list")
 //  })
 
 
+app.get("/dashboard", function(req, res){
+    if(req.isAuthenticated()){
+
+        res.render("admin-dashboard")
+    }
+    else{
+        console.log("You ain't authorised")
+    }
+})
+
+app.get("/student-dashboard", function(req, res){
+    if(req.isAuthenticated()){
+
+        res.render("student-dashboard")
+    }
+    else{
+        console.log("You ain't authorised")
+    }
+})
+
 app.get('/login', function(req, res){
     res.render("signin")
 })
@@ -159,7 +179,7 @@ app.get('/login', function(req, res){
 app.get("/logout", function(req, res){
     req.logout()
     //redirecting to register(home route) when logging out
-    req.redirect("/")
+    res.redirect("/")
 })
 
 
@@ -184,7 +204,7 @@ app.post('/', function(req, res){
                 }
                 else{
                     //directly redirect to search after registration
-                    res.redirect("/list")
+                    res.redirect("/login")
                 }
             })
         }
@@ -207,10 +227,10 @@ app.post("/login", function(req, res){
           //authenticating users and redirecting to home page
           passport.authenticate("local")(req, res, function(){
               if(req.user.role === "Admin"){
-                  console.log("You are an admin")
+                res.redirect("/dashboard")
               }
               
-          res.redirect("/list");
+          res.redirect("/student-dashboard");
         });
       }
     });
