@@ -98,7 +98,7 @@ app.get('/', function(req, res){
 // })
 
 
-
+//Routes For List 
 app.route("/list")
 .get(function(req, res){
     if(req.isAuthenticated()){
@@ -123,7 +123,7 @@ app.route("/list")
         res.redirect("/login")
     }
 })
-
+//post method for list route
 .post(function(req, res){
     
 
@@ -140,23 +140,13 @@ app.route("/list")
         }
     })
 })
-// }, function(req, res){
-    // Marks.find(function(err, foundMarks){
-    //     if(err){
-    //         console.log(err)
-    //     }
-    //     else {
-    //         res.send(foundMarks)
-    //     }
-    // })
-//  })
 
-
+//Get for dashboard route
 app.get("/dashboard", function(req, res){
     if(req.isAuthenticated()){
         if(req.user.role === "Admin")
         {
-
+            //Rendering Admin Dashboard after Admin Authentication
             res.render("admin-dashboard")
         }
         else
@@ -179,6 +169,7 @@ app.get("/student-dashboard", function(req, res){
     }
 })
 
+//Routes for student Creation form
 app.route("/studentCreation")
 .get( function(req, res){
     if(req.isAuthenticated()){
@@ -187,8 +178,10 @@ app.route("/studentCreation")
         }
     }
 })
-.post(function(req, res){
 
+//POST for student creation form
+.post(function(req, res){
+//Taking User Inputs from Forms
   const newStudent = new Marks({
       Name : req.body.name,
       Roll : req.body.roll,
@@ -207,6 +200,8 @@ app.route("/studentCreation")
 
 })
 
+
+//Routes for student update forms
 app.route("/studentUpdate")
 .get(function(req, res){
     if(req.isAuthenticated()){
@@ -215,6 +210,7 @@ app.route("/studentUpdate")
         }
     }
 })
+
 .post(function(req, res){
 
     var objForUpdate ={
@@ -241,7 +237,43 @@ app.route("/studentUpdate")
 
 })
 
+//ROUTES FOR Student Deletion form
+app.route("/studentDelete")
+.get(function(req, res)
+{
+    if(req.isAuthenticated()){
+        if(req.user.role === "Admin"){
+            res.render("studentDelete")
+        }
+        else{
+            res.send("You are not Admin")
+        }
+    }
+    else
+    {
+        res.send("You are not authorised")
+    }
+})
 
+.post(function(req, res){
+    const objForDelete = new Marks({
+        Name : req.body.name,
+        Roll : req.body.roll,
+        Subject : req.body.subject,
+        Marks : req.body.marks
+    }) 
+    
+    Marks.findOneAndDelete({Roll: req.body.roll}, objForDelete, function(err, docs){
+        if(err){
+            res.send("err")
+        }
+        else{
+            console.log(docs)
+            res.send("Successfully deleted document, please go back to the dashoboard")
+        }
+    })
+
+})
 
 
 
