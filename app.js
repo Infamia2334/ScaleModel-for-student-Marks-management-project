@@ -108,11 +108,11 @@ app.route("/list")
                     res.render("list", {Marks: foundMarks})
                 }
                 else{
-                    console.log("No data in database")
+                    res.send("No data in database")
                 }
             }
             else{
-                console.log(err)
+                res.send(err)
             }
         })
         // res.render("list", {Roll: itemsforList})
@@ -129,14 +129,14 @@ app.route("/list")
 
     Marks.find({Roll: req.body.Roll, Subject: req.body.Subject}, function(err, foundMarks){
         if(err){
-            console.log(err)
+            res.send(err)
         }
         else if(foundMarks.length){
             var itemforList = req.body.Roll
             itemsforList.push(itemforList)
         }
         else{
-            console.log("There are no marks found")
+            res.send("There are no marks found")
         }
     })
 })
@@ -154,11 +154,18 @@ app.route("/list")
 
 app.get("/dashboard", function(req, res){
     if(req.isAuthenticated()){
+        if(req.user.role === "Admin")
+        {
 
-        res.render("admin-dashboard")
+            res.render("admin-dashboard")
+        }
+        else
+        {
+            res.send("You are not an Admin")
+        }
     }
     else{
-        console.log("You ain't authorised")
+        res.redirect("/login")
     }
 })
 
@@ -168,7 +175,7 @@ app.get("/student-dashboard", function(req, res){
         res.render("student-dashboard")
     }
     else{
-        console.log("You ain't authorised")
+        res.send("You ain't authorised")
     }
 })
 
@@ -191,10 +198,10 @@ app.route("/studentCreation")
 
   newStudent.save(function(err){
       if(err){
-          console.log(err)
+          res.send(err)
       }
       else{
-          console.log("New Student Created and saved")
+          res.send("New Student Created and saved, please go back to dashbboard")
       }
   })
 
@@ -211,29 +218,23 @@ app.route("/studentUpdate")
 .post(function(req, res){
 
     var objForUpdate ={
-        Name: "",
-        Subject: "",
-        Marks: ""
-    }
-    if(req.body.name){
-        objForUpdate.Name = req.body.name
-    }
-
-    if(req.body.subject){
-        objForUpdate.Subject = req.body.subject
-    }
-
-    if(req.body.name){
-        objForUpdate.Marks = req.body.marks
+        Name: req.body.name,
+        Subject: req.body.subject,
+        Marks: req.body.marks
     }
 
 
-
-    Marks.updateOne({Roll: req.body.roll}, {$set: req.body}, function(err, docs){
+    Marks.findOneAndUpdate({Roll: req.body.roll}, objForUpdate, function(err, docs){
         if(err){
-            console.log(err)
-        }else{
-            console.log("Successfully updated docs, :", docs)
+            res.send(err)
+        }
+        else if(Object.keys(req.body).length === 0)
+        {
+            res.send("No input data")
+        }
+        else{
+            res.send("Student document modified, please go back to dashboard")
+            console.log(docs)
         }
 
     })
@@ -287,7 +288,7 @@ app.post('/', function(req, res){
 
 
 app.post("/login", function(req, res){
-    //creating new User:
+    //creating new User for logging in:
     const user = new User({
       username: req.body.username,
       password: req.body.password
@@ -295,7 +296,7 @@ app.post("/login", function(req, res){
   
     req.login(user, function(err){
       if (err) {
-        console.log(err);
+        res.send(err);
       } 
       else {
           //authenticating users and redirecting to home page
