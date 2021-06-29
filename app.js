@@ -32,10 +32,10 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 //Connecting to mongoose
-mongoose.connect("mongodb+srv://admin-dipan:Test123@appcluster.x7nob.mongodb.net/myFirstDatabase?retryWrites=true&w=majority", {useNewUrlParser : true, useUnifiedTopology: true})
+mongoose.connect(process.env.DB_URL_1, {useNewUrlParser : true, useUnifiedTopology: true})
 mongoose.set('useCreateIndex', true)
 
-const studentMarksDB = mongoose.createConnection("mongodb+srv://admin-dipan:Test123@appcluster.x7nob.mongodb.net/studentMarksDB?retryWrites=true&w=majority", {useNewUrlParser : true, useUnifiedTopology: true})
+const studentMarksDB = mongoose.createConnection(process.env.DB_URL_2, {useNewUrlParser : true, useUnifiedTopology: true})
 
 const ROLES = {
     Admin: "Admin",
